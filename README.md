@@ -11,8 +11,8 @@ A modular, scalable FastAPI starter project designed for fullstack applications 
 ├── app  # Contains the main application files.
 │   ├── __init__.py   # this file makes "app" a "Python package"
 │   ├── main.py       # Initializes the FastAPI application.
-│   ├── database.py # Database engine/session setup
-│   ├── dependencies.py # Defines dependencies used by the routers
+│   ├── database.py   # Database engine/session setup
+│   ├── dependencies.py   # Defines dependencies used by the routers
 │   ├── routers
 │   │   ├── __init__.py
 │   │   ├── items.py  # Defines routes and endpoints related to items.
@@ -168,16 +168,8 @@ You can extend this with:
 
 ## 👤 Author
 
-Made with ❤️ by [Your Name]
+Made by me, Myron Moss
 
-If you use this template, feel free to credit or fork it. Contributions are welcome!
+If you use this template, feel free to credit or fork it. Also, reach out to me for any feedback:
 
-[GitHub](https://github.com/mossi1mj) • [LinkedIn](https://linkedin.com/in/mossjmyron)
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License**.
-
-See the [`LICENSE`](LICENSE) file for full details.
+[GitHub](https://github.com/mossi1mj) • [LinkedIn](https://linkedin.com/in/mossjmyron) • [Email](mailto:mossjmyron@gmail.com)
