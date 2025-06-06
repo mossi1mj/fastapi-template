@@ -16,10 +16,7 @@ from app.schemas.item import ItemCreate, ItemRead
 from app.services import item as item_service
 from app.database import get_db
 
-router = APIRouter(
-    prefix="/items",
-    tags=["items"]
-)
+router = APIRouter()
 
 @router.get("/", response_model=List[ItemRead])
 def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):

@@ -14,10 +14,7 @@ from app.schemas.user import UserCreate, UserRead
 from app.services import user as user_service
 from app.database import get_db
 
-router = APIRouter(
-    prefix="/users",
-    tags=["users"]
-)
+router = APIRouter()
 
 @router.get("/", response_model=List[UserRead])
 def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
