@@ -172,4 +172,4 @@ Made by me, Myron Moss
 
 If you use this template, feel free to credit or fork it. Also, reach out to me for any feedback:
 
-[GitHub](https://github.com/mossi1mj) • [LinkedIn](https://linkedin.com/in/mossjmyron) • [Email](mailto:mossjmyron@gmail.com?subject=Feedback for FastAPI Template")
+[GitHub](https://github.com/mossi1mj) • [LinkedIn](https://linkedin.com/in/mossjmyron) • [Email](mailto:mossjmyron@gmail.com)
