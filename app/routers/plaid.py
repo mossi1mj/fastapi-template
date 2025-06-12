@@ -21,7 +21,7 @@ from app.dependencies import get_current_user_uid  # You will create this
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
-# 🧠 Setup Plaid configuration using environment variables
+# Setup Plaid configuration using environment variables
 plaid_env = os.getenv("PLAID_ENV", "sandbox")
 configuration = Configuration(
     host=f"https://{plaid_env}.plaid.com",
