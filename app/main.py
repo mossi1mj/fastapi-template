@@ -2,7 +2,7 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import users
+from app.routers import users, plaid
 from app.database import initialize_database
 from app.models.user import User
 
@@ -34,6 +34,7 @@ initialize_database([User])
 
 # Include routers from different modules
 app.include_router(users.router, prefix="/users", tags=["Users"])
+app.include_router(plaid.router, prefix="/plaid", tags=["Plaid"])
 logger.info("FastAPI application started.")
 
 # Default root route
