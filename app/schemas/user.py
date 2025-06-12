@@ -15,7 +15,7 @@ class UserCreate(BaseModel):
     last_name: str
     created_at: Optional[datetime] = None
 
-    # Optional Plaid fields (not required at creation)
+    # Add these optional Plaid fields here with default None
     plaid_user_token: Optional[str] = None
     access_token: Optional[str] = None
     item_id: Optional[str] = None
@@ -27,7 +27,7 @@ class UserResponse(BaseModel):
     first_name: str
     last_name: str
     created_at: datetime
-    
+
     plaid_user_token: Optional[str] = None
     access_token: Optional[str] = None
     item_id: Optional[str] = None

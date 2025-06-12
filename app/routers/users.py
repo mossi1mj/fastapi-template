@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 from app.schemas.user import UserCreate, UserResponse
 from app.services.user import create_user, get_user_by_uid
 
-router = APIRouter(prefix="/users", tags=["Users"])
+router = APIRouter()
 logger = logging.getLogger(__name__)
 
 @router.post("/", response_model=UserResponse)
