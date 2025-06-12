@@ -1,7 +1,17 @@
+import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import items, users
+from app.routers import users
+from app.database import initialize_database
+from app.models.user import User
+
+# Logging setup
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s"
+)
+logger = logging.getLogger(__name__)
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -19,9 +29,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Initialize DB on startup
+initialize_database([User])
+
 # Include routers from different modules
 app.include_router(users.router, prefix="/users", tags=["Users"])
-app.include_router(items.router, prefix="/items", tags=["Items"])
+logger.info("FastAPI application started.")
 
 # Default root route
 @app.get("/")

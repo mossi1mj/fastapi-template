@@ -1,91 +1,68 @@
-"""
-Database setup using SQLAlchemy for SQL databases (PostgreSQL, SQLite, etc.).
-
-This is the standard approach for SQL databases.
-
-If you want to use NoSQL databases (MongoDB, DynamoDB), 
-see the bottom of this file for recommended packages and example code snippets.
-
-Update the DATABASE_URL with your actual env variable from .env file.
-
-"""
-
 import os
+import logging
 from dotenv import load_dotenv
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, inspect
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# ===========================
-# Configure your database URL here.
-# Examples:
-# SQLite (dev):
-# DATABASE_URL = "sqlite:///./test.db"
-#
-# PostgreSQL:
-# DATABASE_URL = "postgresql://user:password@localhost/dbname"
-# ===========================
+# Setup logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-# Load .env file variables into environment
+# Load environment variables
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_NAME = os.getenv("DB_NAME")
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_PORT = os.getenv("DB_PORT", "5432")
 
-# Create SQLAlchemy engine
+DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+
+# Get database URL
+DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
     raise ValueError("No DATABASE_URL found in environment variables")
+logger.info(f"Connecting to database at {DATABASE_URL}")
 
+# Create SQLAlchemy engine
 engine = create_engine(
     DATABASE_URL,
     connect_args={"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
 )
 
-# Create a configured "Session" class
+# Create session
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Base class for your models
+# Declarative base for models
 Base = declarative_base()
 
-# Dependency to get DB session in FastAPI routes
+# Import models after Base is declared to avoid circular imports
+
+def initialize_database(models: list):
+    """
+    Initialize the database: create tables if they don't exist.
+
+    Args:
+        models (list): List of SQLAlchemy model classes to check/create.
+    """
+    inspector = inspect(engine)
+    tables = inspector.get_table_names()
+
+    for model in models:
+        table_name = model.__tablename__
+        if table_name not in tables:
+            logger.info(f"Creating '{table_name}' table...")
+            Base.metadata.create_all(bind=engine, tables=[model.__table__])
+            logger.info(f"'{table_name}' table created.")
+        else:
+            logger.info(f"'{table_name}' table already exists — skipping creation.")
+
+# FastAPI dependency to get a DB session
 def get_db():
-    """
-    FastAPI dependency that provides a database session
-    and closes it after request is done.
-    """
     db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
-
-# ===========================
-# NoSQL Recommendations
-# ===========================
-
-"""
-# For MongoDB (NoSQL) — use Motor (async) or MongoEngine (sync)
-
-# pip install motor
-# import motor.motor_asyncio
-# client = motor.motor_asyncio.AsyncIOMotorClient("mongodb://localhost:27017")
-# db = client.your_database
-
-# For DynamoDB (AWS NoSQL) — use boto3 or PynamoDB
-
-# pip install boto3 pynamodb
-# import boto3
-# dynamodb = boto3.resource('dynamodb', region_name='your-region')
-# table = dynamodb.Table('your-table-name')
-
-# OR with PynamoDB (ORM-like)
-
-# from pynamodb.models import Model
-# from pynamodb.attributes import UnicodeAttribute
-
-# class MyModel(Model):
-#     class Meta:
-#         table_name = "your-table"
-#         region = 'your-region'
-#     id = UnicodeAttribute(hash_key=True)
-#     attribute = UnicodeAttribute()
-"""

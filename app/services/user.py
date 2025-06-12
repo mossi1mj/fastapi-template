@@ -13,59 +13,39 @@ Handle user-specific CRUD operations and any special logic (e.g., password hashi
 
 ⚠️ Reminder: NEVER store plain text passwords. Always hash them using bcrypt or a similar library.
 """
-
+import logging
 from sqlalchemy.orm import Session
 from app.models.user import User
 from app.schemas.user import UserCreate
-from app.utils.authentication import hash_password  # bcrypt-based utility
 
-def get_user(db: Session, user_id: int) -> User | None:
+logger = logging.getLogger(__name__)
+
+def get_user_by_uid(db: Session, uid: str):
     """
-    Retrieve a user from the database by their ID.
-
-    Args:
-        db (Session): SQLAlchemy database session
-        user_id (int): User's unique ID
-
-    Returns:
-        User | None: The user if found, else None
+    Retrieve user by Firebase UID.
     """
-    return db.query(User).filter(User.id == user_id).first()
+    logger.info(f"Looking up user with Firebase UID: {uid}")
+    return db.query(User).filter(User.uid == uid).first()
 
-def get_user_by_email(db: Session, email: str) -> User | None:
+def create_user(db: Session, user_data: UserCreate):
     """
-    Retrieve a user from the database by their email.
-
-    Args:
-        db (Session): SQLAlchemy database session
-        email (str): User's email address
-
-    Returns:
-        User | None: The user if found, else None
+    Create user with optional Plaid fields.
+    Initially, Plaid fields will be None.
     """
-    return db.query(User).filter(User.email == email).first()
-
-def create_user(db: Session, user: UserCreate) -> User:
-    """
-    Create a new user in the database.
-
-    Args:
-        db (Session): SQLAlchemy database session
-        user (UserCreate): Pydantic schema containing user creation data
-
-    Returns:
-        User: The newly created user
-    """
-    hashed_pw = hash_password(user.password)  # Hash password before saving
-
-    db_user = User(
-        email=user.email,
-        first_name=user.first_name,
-        last_name=user.last_name,
-        hashed_password=hashed_pw
+    logger.info(f"Creating user with UID: {user_data.uid} and email: {user_data.email}")
+    new_user = User(
+        uid=user_data.uid,
+        email=user_data.email,
+        first_name=user_data.first_name,
+        last_name=user_data.last_name,
+        created_at=user_data.created_at or None,
+        plaid_user_token=user_data.plaid_user_token,
+        access_token=user_data.access_token,
+        item_id=user_data.item_id
     )
-    db.add(db_user)
+    db.add(new_user)
     db.commit()
-    db.refresh(db_user)  # Refresh instance to return it with the ID and timestamps
-    return db_user
+    db.refresh(new_user)
+    logger.info(f"User created with DB ID: {new_user.id}")
+    return new_user
 
