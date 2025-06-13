@@ -192,3 +192,6 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+# Firebase service account
+finance-budget-service-firebase-adminsdk-fbsvc-77b97fc278.json
