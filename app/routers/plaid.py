@@ -16,7 +16,7 @@ from plaid.api_client import ApiClient
 
 from app.database import get_db
 from app.services.user import get_user_by_uid
-from app.dependencies import get_current_user_uid  # You will create this
+from app.dependencies import verify_firebase_token  # You will create this
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -52,7 +52,7 @@ def create_link_token(uid: str):
     return {"link_token": response["link_token"]}
 
 @router.post("/exchange_public_token")
-def exchange_token(public_token: str, db: Session = Depends(get_db), uid: str = Depends(get_current_user_uid)):
+def exchange_token(public_token: str, db: Session = Depends(get_db), uid: str = Depends(verify_firebase_token)):
     """
     Exchange a public token for an access token and save it to the user's record.
     """
@@ -74,7 +74,7 @@ def exchange_token(public_token: str, db: Session = Depends(get_db), uid: str = 
     return {"access_token": access_token, "item_id": item_id}
 
 @router.get("/accounts")
-def get_accounts(db: Session = Depends(get_db), uid: str = Depends(get_current_user_uid)):
+def get_accounts(db: Session = Depends(get_db), uid: str = Depends(verify_firebase_token)):
     """
     Get linked bank accounts using the stored access token.
     """
@@ -89,7 +89,7 @@ def get_accounts(db: Session = Depends(get_db), uid: str = Depends(get_current_u
 
 
 @router.get("/balance")
-def get_balance(db: Session = Depends(get_db), uid: str = Depends(get_current_user_uid)):
+def get_balance(db: Session = Depends(get_db), uid: str = Depends(verify_firebase_token)):
     """
     Get real-time balance for all accounts.
     """
@@ -103,7 +103,7 @@ def get_balance(db: Session = Depends(get_db), uid: str = Depends(get_current_us
 
 
 @router.get("/transactions")
-def get_transactions(db: Session = Depends(get_db), uid: str = Depends(get_current_user_uid)):
+def get_transactions(db: Session = Depends(get_db), uid: str = Depends(verify_firebase_token)):
     """
     Get recent transactions for the user.
     """

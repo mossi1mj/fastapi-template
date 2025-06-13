@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.routers import users, plaid
 from app.database import initialize_database
 from app.models.user import User
+from app.dependencies import initialize_firebase
 
 # Logging setup
 logging.basicConfig(
@@ -31,6 +32,9 @@ app.add_middleware(
 
 # Initialize DB on startup
 initialize_database([User])
+
+# Initialize Firebase
+initialize_firebase()
 
 # Include routers from different modules
 app.include_router(users.router, prefix="/users", tags=["Users"])
